@@ -1,0 +1,56 @@
+import re
+import json
+
+FILE_NAME = "students.json"
+
+class Student:
+    def __init__(self, sid, name, email, course):
+        self.sid = sid
+        self.name = name
+        self.email = email
+        self.course = course
+
+    def to_dict(self):
+        return {"id": self.sid, "name": self.name, "email": self.email, "course": self.course}
+
+# FEATURE: Validate Email using Regex
+def validate_email(email):
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if re.match(pattern, email):
+        return True
+    else:
+        return False
+
+# FEATURE: Add Student + Save to File
+def add_and_save_student():
+    print("--- Add Student ---")
+    sid = input("Enter ID: ").strip()
+    name = input("Enter Name: ").strip()
+    email = input("Enter Email: ").strip()
+    course = input("Enter Course: ").strip()
+
+    # Validate email
+    if not validate_email(email):
+        print(f"Error: '{email}' is not a valid email!")
+        return
+
+    # Create new student
+    new_student = Student(sid, name, email, course)
+
+    # Load old data if file exists
+    try:
+        with open(FILE_NAME, 'r') as f:
+            data = json.load(f)
+    except:
+        data = []
+
+    # Add new data and save
+    data.append(new_student.to_dict())
+
+    with open(FILE_NAME, 'w') as f:
+        json.dump(data, f, indent=4)
+    
+    print(f"Student Saved Successfully to {FILE_NAME}!")
+
+if __name__ == "__main__":
+    add_and_save_student()
